@@ -10,26 +10,54 @@ module Api
     end
 
     def show
-      # Encuentra el portafolio por ID
+      # Find the portfolio by ID
       @investment_portfolio = InvestmentPortfolio.find(params[:id])
 
-      # Mapea los detalles de las acciones incluidas en el portafolio
+      # Simulate start and end dates for the calculation of annualized return
+      start_date = Date.today - 365 # 1 year ago
+      end_date = Date.today
+
+      # Map the details of stocks included in the portfolio
       stocks = @investment_portfolio.investment_portfolios_stocks.map do |ips|
+        start_price = ips.stock.price(start_date)
+        end_price = ips.stock.price(end_date)
+        profit_or_loss = ((end_price - ips.added_price) * ips.quantity).round(2)
+
+        # Calculate annualized return
+        annualized_return = if start_price > 0
+                              ((end_price / start_price) ** (1.0 / ((end_date - start_date).to_f / 365.25)) - 1).round(4)
+                            else
+                              0
+                            end
+
         {
           id: ips.stock.id,
           name: ips.stock.name,
-          added_price: ips.added_price,
-          current_price: ips.stock.price(Date.today),
           quantity: ips.quantity,
-          profit_or_loss: (ips.stock.price(Date.today) * ips.quantity - ips.added_price * ips.quantity).round(2)
+          added_price: ips.added_price,
+          current_price: end_price,
+          profit_or_loss: profit_or_loss,
+          annualized_return: annualized_return * 100 # As a percentage
         }
       end
 
-      # Devuelve el JSON con la información del portafolio y sus acciones
+      # Calculate totals
+      total_quantity = stocks.sum { |s| s[:quantity] }
+      total_added_price = stocks.sum { |s| s[:added_price] * s[:quantity] }
+      total_current_price = stocks.sum { |s| s[:current_price] * s[:quantity] }
+      total_profit_or_loss = stocks.sum { |s| s[:profit_or_loss] }
+
+      # Render the JSON with portfolio and stock information, including totals
       render json: {
         id: @investment_portfolio.id,
         name: @investment_portfolio.name,
-        stocks: stocks
+        stocks: stocks,
+        totals: {
+          quantity: total_quantity,
+          added_price: total_added_price.round(2),
+          current_price: total_current_price.round(2),
+          profit_or_loss: total_profit_or_loss.round(2)
+        }
       }
     end
 
@@ -40,13 +68,13 @@ module Api
       stock_entries.each do |stock_entry|
         stock = Stock.find(stock_entry[:stock_id])
         
-        # Asegúrate de que quantity tenga un valor válido, predeterminado a 1 si está ausente
+        # Ensure quantity is valid, default to 1 if absent
         quantity = stock_entry[:quantity].to_i
         quantity = 1 if quantity <= 0
 
         added_price = stock.price(Date.today)
-        
-        # Log para depuración
+
+        # Log for debugging
         puts "Adding Stock: #{stock.name}, Quantity: #{quantity}, Added Price: #{added_price}"
         Rails.logger.info "Adding Stock: #{stock.name}, Quantity: #{quantity}, Added Price: #{added_price}"
 
@@ -64,11 +92,13 @@ module Api
       end
     end
 
-    # Método para eliminar un portafolio
+    # Method to delete a portfolio
     def destroy
       @investment_portfolio = InvestmentPortfolio.find(params[:id])
       @investment_portfolio.destroy
       render json: { message: 'Portfolio deleted successfully' }, status: :ok
+    rescue ActiveRecord::InvalidForeignKey => e
+      render json: { error: 'Cannot delete portfolio due to associated records.' }, status: :unprocessable_entity
     end
 
     private

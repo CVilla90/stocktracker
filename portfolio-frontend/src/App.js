@@ -41,14 +41,13 @@ function App() {
     const newPortfolio = {
       name: portfolioName,
       stocks: Object.entries(selectedStocks)
-        .filter(([id, { quantity }]) => quantity > 0) // Filtra solo las acciones con cantidad mayor que 0
+        .filter(([id, { quantity }]) => quantity > 0)
         .map(([id, { quantity }]) => ({
           stock_id: parseInt(id, 10),
           quantity: parseInt(quantity, 10),
         })),
     };
 
-    // Console log para verificar los valores enviados
     console.log('Creating portfolio with data:', newPortfolio);
 
     fetch('http://localhost:3000/api/investment_portfolios', {
@@ -60,7 +59,7 @@ function App() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log('Portfolio created:', data); // Verificar la respuesta
+        console.log('Portfolio created:', data);
         setPortfolios([...portfolios, data]);
         setPortfolioName('');
         setSelectedStocks({});
@@ -74,7 +73,7 @@ function App() {
       ...prevSelectedStocks,
       [stockId]: {
         ...prevSelectedStocks[stockId],
-        [field]: isNaN(value) ? 0 : value, // Verifica si el valor es NaN y ajusta a 0 si es necesario
+        [field]: isNaN(value) ? 0 : value,
       },
     }));
   };
@@ -90,6 +89,11 @@ function App() {
       fetch(`http://localhost:3000/api/investment_portfolios/${portfolioId}`)
         .then((response) => response.json())
         .then((data) => {
+          const { totals } = data;
+          totals.added_price = Number(totals.added_price || 0);
+          totals.current_price = Number(totals.current_price || 0);
+          totals.profit_or_loss = Number(totals.profit_or_loss || 0);
+          totals.annualized_return = calculateWeightedAnnualizedReturn(data.stocks);
           setPortfolioData(data);
           setLoading(false);
         })
@@ -98,6 +102,16 @@ function App() {
           setLoading(false);
         });
     }
+  };
+
+  const calculateWeightedAnnualizedReturn = (stocks) => {
+    const totalValue = stocks.reduce((acc, stock) => acc + stock.current_price * stock.quantity, 0);
+    if (totalValue === 0) return 0; // Avoid division by zero
+    const weightedAnnualizedReturn = stocks.reduce((acc, stock) => {
+      const weight = (stock.current_price * stock.quantity) / totalValue;
+      return acc + weight * stock.annualized_return;
+    }, 0);
+    return (weightedAnnualizedReturn * 100).toFixed(2); // Return as a percentage
   };
 
   const handleDeletePortfolio = (portfolioId) => {
@@ -125,6 +139,19 @@ function App() {
       </div>
     );
   }
+
+  const totals = portfolioData?.totals || {
+    quantity: 0,
+    added_price: 0,
+    current_price: 0,
+    profit_or_loss: 0,
+    annualized_return: 0,
+  };
+
+  const totalAddedPrice = Number(totals.added_price);
+  const totalCurrentPrice = Number(totals.current_price);
+  const totalProfitOrLoss = Number(totals.profit_or_loss);
+  const totalAnnualizedReturn = totals.annualized_return;
 
   return (
     <div className="App">
@@ -212,9 +239,11 @@ function App() {
                     <thead>
                       <tr>
                         <th>Stock Name</th>
+                        <th>Quantity</th>
                         <th>Added Price</th>
                         <th>Current Price</th>
                         <th>Profit/Loss</th>
+                        <th>Annualized Return</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -225,19 +254,31 @@ function App() {
                         const totalCurrentPrice = currentPrice * quantity;
                         const totalAddedPrice = addedPrice * quantity;
                         const profitOrLoss = totalCurrentPrice - totalAddedPrice;
-                        const profitClass = profitOrLoss > 0 ? 'profit' : profitOrLoss < 0 ? 'loss' : 'neutral';
+                        const annualizedReturn = stock.annualized_return * 100;
 
                         return (
                           <tr key={stock.id}>
                             <td>{stock.name}</td>
+                            <td>{quantity}</td>
                             <td>${totalAddedPrice.toFixed(2)}</td>
                             <td>${totalCurrentPrice.toFixed(2)}</td>
-                            <td className={profitClass}>
+                            <td className={profitOrLoss > 0 ? 'profit' : profitOrLoss < 0 ? 'loss' : 'neutral'}>
                               ${profitOrLoss.toFixed(2)}
                             </td>
+                            <td>{annualizedReturn.toFixed(2)}%</td>
                           </tr>
                         );
                       })}
+                      <tr className="totals-row">
+                        <td>Total</td>
+                        <td>{totals.quantity}</td>
+                        <td>${totalAddedPrice.toFixed(2)}</td>
+                        <td>${totalCurrentPrice.toFixed(2)}</td>
+                        <td className={totalProfitOrLoss > 0 ? 'profit' : totalProfitOrLoss < 0 ? 'loss' : 'neutral'}>
+                          ${totalProfitOrLoss.toFixed(2)}
+                        </td>
+                        <td>{totalAnnualizedReturn}%</td> {/* Total Annualized Return */}
+                      </tr>
                     </tbody>
                   </table>
                 ) : (

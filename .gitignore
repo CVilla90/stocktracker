@@ -29,6 +29,13 @@
 !/tmp/storage/
 !/tmp/storage/.keep
 
+# Ignore all SQLite databases in the storage folder
+/storage/*.sqlite3
+/storage/*.sqlite3-journal
+
+# Include the development database for mock stocks
+!/storage/development.sqlite3
+
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 /config/credentials.yml.enc
