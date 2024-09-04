@@ -31,3 +31,35 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+/config/credentials.yml.enc
+
+# Ignore node modules for React frontend
+/node_modules/
+
+# Ignore Yarn and NPM lock files
+yarn.lock
+package-lock.json
+
+# Ignore compiled assets
+/public/assets
+/public/packs
+
+# Ignore SQLite databases
+/db/*.sqlite3
+/db/*.sqlite3-journal
+!/db/development.sqlite3 # Keep this file as per your requirement
+
+# Ignore byebug history
+.byebug_history
+
+# Ignore system-specific files
+.DS_Store
+
+# Ignore coverage reports
+/coverage/
+
+# Ignore GitHub workflows
+.github/
+
+# Ignore Mac system files
+.DS_Store

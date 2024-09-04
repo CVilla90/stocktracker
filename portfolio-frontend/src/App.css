@@ -1,0 +1,228 @@
+/* Rails\portfolio\portfolio-frontend\src\App.css */
+
+.App {
+  text-align: center;
+  background-color: #121212;
+  color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.App-header {
+  background-color: #1e1e1e;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  width: 90%;
+  max-width: 800px;
+  position: relative;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.simulation-note {
+  font-size: 1rem;
+  color: #a0a0a0;
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  color: #ffffff;
+}
+
+thead {
+  background-color: #2c2c2c;
+}
+
+thead th {
+  padding: 12px;
+  text-align: left;
+  font-weight: bold;
+}
+
+tbody tr {
+  transition: background-color 0.3s;
+}
+
+tbody tr:hover {
+  background-color: #333333;
+}
+
+tbody td {
+  padding: 10px;
+  border-top: 1px solid #444444;
+}
+
+th, td {
+  border-bottom: 1px solid #444444;
+}
+
+td.profit {
+  color: green;
+}
+
+td.loss {
+  color: red;
+}
+
+td.neutral {
+  color: white;
+}
+
+.clock {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 0.9rem;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: #61dafb;
+}
+
+.my-portfolios-button {
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  font-size: 0.9rem;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: #61dafb;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.my-portfolios-button:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.portfolio-section {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.create-portfolio-button {
+  margin: 10px 0;
+  padding: 10px 15px;
+  background-color: #282c34;
+  border: none;
+  color: #61dafb;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.create-portfolio-button:hover {
+  background-color: #1c1f26;
+}
+
+.portfolio-form {
+  background-color: #2c2f33;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin: 20px auto;
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  animation: slideDown 0.5s ease-in-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.portfolio-section {
+  margin-top: 20px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.portfolio-dropdown {
+  margin: 20px auto;
+  width: 100%;
+  max-width: 300px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #444;
+  background-color: #2c2c2c;
+  color: #ffffff;
+  appearance: none;
+  cursor: pointer;
+  text-align: center;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.portfolio-dropdown:hover {
+  background-color: #333;
+}
+
+.portfolio-details {
+  margin-top: 20px;
+  text-align: left;
+  width: 100%;
+}
+
+.portfolio-details h2 {
+  margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+  .App-header {
+    padding: 15px;
+    width: 95%;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  table, .portfolio-form, .portfolio-dropdown {
+    font-size: 0.9rem;
+    width: 100%;
+  }
+
+  .create-portfolio-button, .my-portfolios-button, .clock {
+    font-size: 0.8rem;
+  }
+}
+
+/* Rails\portfolio\portfolio-frontend\src\App.css */
+
+.delete-portfolio-button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  margin-left: 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.delete-portfolio-button:hover {
+  background-color: darkred;
+}
